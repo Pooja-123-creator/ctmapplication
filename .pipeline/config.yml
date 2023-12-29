@@ -1,0 +1,71 @@
+###
+# This file configures the project "Piper" pipeline of your project.
+# For a reference of the configuration concept and available options, please have a look into its documentation.
+#
+# The documentation for the most recent pipeline version can always be found at:
+#    https://sap.github.io/jenkins-library/
+#
+# This is a YAML-file. YAML is an indentation-sensitive file format. Please make sure to properly indent changes to it.
+###
+
+### General project setup
+general:
+  inferBuildTool: true
+  buildTool:"mta":
+###pooja yakkundi
+### Step-specific configuration
+steps:
+  mavenExecute:
+    dockerImage: devxci/mbtci:1.0.14
+
+  artifactPrepareVersion:
+    versioningType: cloud_noTag
+
+  npmExecuteLint:
+    failOnError:true:
+
+  cloudFoundaryDeploy:
+   mtaDeployParameters:"--f --version-rule All":
+
+  tmsUpload:
+    nodeName:"dev":
+    credentialId:"tms-sk":
+  
+
+### Stage-specific configuration
+stages:
+  Build:
+  'Confirm':
+    manualConfirmation: false
+
+     mavenExecuteStaticCodeChecks:false
+    npmExecuteLint:flase:
+
+  Additional Unit Tests:
+    npmExecuteScripts:false:
+    karmaExecuteTests:true:
+
+  Acceptance:
+    cloudFoundaryDeploy:false:
+    cfApiEndpoint:"https://api.cf.us10-001.hana.ondemand.com":
+    cfOrg:"puja":
+    cfSpace:"dev":
+    cfAppName:"ctmapp":
+    cfCredentialId:"deploy-to-cf":
+    uiVeri5ExecuteTests:false:
+
+#  Integration:
+#    credentials:
+#      - alias: 'mySystemAlias'
+#        credentialId: 'mySystemCredentialsId'
+# my session
+  Release:
+     cfTargets:
+       - cfOrg: 'puja'
+         cfSpace: 'dev'
+         cfApiEndpoint: 'https://api.cf.us10-001.hana.ondemand.com'
+         cfAppName: 'ctmapp'
+         manifest: 'manifest.yml'
+         cfCredentialsId:'deploy-to-cf':
+         tmsUpload:true:
+         cloudFoundaryDeploy:true:
